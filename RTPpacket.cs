@@ -17,10 +17,11 @@ namespace RTSP_Server
 		{
 			byte[] headers = Encoding.ASCII.GetBytes($",{sequenceNumber},{timestamp}");
 			byte[] packet = new byte[payload.Length + headers.Length];
+			//System.Console.WriteLine($"Packet length: {packet.Length}, payload: {payload.Length}, header: {headers.Length}");
 			headers.CopyTo(packet, payload.Length);
 			for (int i = 0; i < payload.Length; i++)
 			{
-				headers[i] = payload[i];
+				packet[i] = payload[i];
 			}
 			return packet;
 		}

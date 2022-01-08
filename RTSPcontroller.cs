@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -18,6 +19,7 @@ namespace RTSP_Server
 		public int clientRTPport;
 		public string requestedVideo;
 		public const int RTSP_PORT = 554;
+		private int sequenceNumber = 0;
 		private RTPcontroller rtpController;
 		public RTSPcontroller()
 		{
@@ -39,7 +41,10 @@ namespace RTSP_Server
 		}
 		private void Play()
 		{
-			//rtpController.sendPacket();
+			//FileInfo info = new FileInfo("./video.mjpeg");
+			byte[] bytes = readFileBytes(0, 1000);
+			RTPpacket packet = new RTPpacket(0, 0, bytes);
+			rtpController.sendPacket(packet, clientRTPport);
 		}
 		private void handleRequest(string request)
 		{
@@ -54,7 +59,22 @@ namespace RTSP_Server
 				case STATE.SETUP:
 					Setup();
 					break;
+				case STATE.PLAY:
+					Play();
+					break;
 			}
+		}
+		private static byte[] readFileBytes(int from, int count)
+		{
+			var data = new byte[1000];
+			FileStream stream = new FileStream("./video.mjpeg", FileMode.Open);
+			using (BinaryReader reader = new BinaryReader(stream))
+			{
+				reader.BaseStream.Seek(from, SeekOrigin.Begin);
+				reader.Read(data, 0, count);
+			}
+
+			return data;
 		}
 	}
 }
