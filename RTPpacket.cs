@@ -1,13 +1,13 @@
 using System.Text;
 
-namespace RTP
+namespace RTSP_Server
 {
-	class RTPpackage
+	class RTPpacket
 	{
 		public byte[] payload;
 		public int sequenceNumber;
 		public int timestamp;
-		public RTPpackage(byte sequenceNumber, int timestamp, byte[] payload)
+		public RTPpacket(byte sequenceNumber, int timestamp, byte[] payload)
 		{
 			this.payload = payload;
 			this.sequenceNumber = sequenceNumber;
