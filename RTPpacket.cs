@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 
 namespace RTSP_Server
@@ -23,7 +24,8 @@ namespace RTSP_Server
 			{
 				packet[i] = payload[i];
 			}
-			return packet;
+			File.WriteAllBytes("./video2.mp4", payload);
+			return payload;
 		}
 	}
 }

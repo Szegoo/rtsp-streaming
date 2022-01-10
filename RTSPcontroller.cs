@@ -16,7 +16,7 @@ namespace RTSP_Server
 			TEARDOWN
 		}
 		private STATE state;
-		public int clientRTPport;
+		public int clientRTPport = 3000;
 		public string requestedVideo;
 		public const int RTSP_PORT = 554;
 		private int sequenceNumber = 0;
@@ -39,20 +39,23 @@ namespace RTSP_Server
 		{
 			rtpController = new RTPcontroller();
 		}
-		private void Play()
+		private void Play(string[] options)
 		{
+			int sequenceNumber = Convert.ToInt32(options[1]);
+			System.Console.WriteLine($"Sequence number: {sequenceNumber}");
 			//FileInfo info = new FileInfo("./video.mjpeg");
-			byte[] bytes = readFileBytes(0, 1000);
-			RTPpacket packet = new RTPpacket(0, 0, bytes);
+			byte[] bytes = readFileBytes(sequenceNumber, 64000);
+			RTPpacket packet = new RTPpacket(Convert.ToByte(sequenceNumber), 0, bytes);
 			rtpController.sendPacket(packet, clientRTPport);
 		}
 		private void handleRequest(string request)
 		{
 			string[] options = request.Split(" ");
-			setState(options[0]);
+			setState(options);
 		}
-		private void setState(string state)
+		private void setState(string[] options)
 		{
+			string state = options[0];
 			Enum.TryParse(state, true, out this.state);
 			switch (this.state)
 			{
@@ -60,14 +63,14 @@ namespace RTSP_Server
 					Setup();
 					break;
 				case STATE.PLAY:
-					Play();
+					Play(options);
 					break;
 			}
 		}
 		private static byte[] readFileBytes(int from, int count)
 		{
-			var data = new byte[1000];
-			FileStream stream = new FileStream("./video.mjpeg", FileMode.Open);
+			var data = new byte[64000];
+			FileStream stream = new FileStream("./video.mp4", FileMode.Open);
 			using (BinaryReader reader = new BinaryReader(stream))
 			{
 				reader.BaseStream.Seek(from, SeekOrigin.Begin);

@@ -17,7 +17,7 @@ namespace RTSP_Server
 		{
 			byte[] dgram = packet.generatePacket();
 			System.Console.WriteLine(dgram);
-			IPEndPoint ep = new IPEndPoint(client, clientPort);
+			IPEndPoint ep = new IPEndPoint(client, 3000);
 
 			socket.SendTo(dgram, ep);
 		}
