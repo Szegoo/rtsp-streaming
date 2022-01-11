@@ -25,7 +25,7 @@ namespace RTSP_Server
 				packet[i] = payload[i];
 			}
 			File.WriteAllBytes("./video2.mp4", payload);
-			return payload;
+			return packet;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 
 namespace RTSP_Server
 {
@@ -37,16 +38,34 @@ namespace RTSP_Server
 		}
 		private void Setup()
 		{
+			sequenceNumber = 0;
 			rtpController = new RTPcontroller();
 		}
 		private void Play(string[] options)
 		{
-			int sequenceNumber = Convert.ToInt32(options[1]);
-			System.Console.WriteLine($"Sequence number: {sequenceNumber}");
-			//FileInfo info = new FileInfo("./video.mjpeg");
-			byte[] bytes = readFileBytes(sequenceNumber, 64000);
-			RTPpacket packet = new RTPpacket(Convert.ToByte(sequenceNumber), 0, bytes);
-			rtpController.sendPacket(packet, clientRTPport);
+			ThreadStart threadStart = new ThreadStart(() =>
+			{
+				int packetsSent = 0;
+				long length = new FileInfo("./video.mp4").Length;
+				System.Console.WriteLine("File length: " + length);
+				while (state == STATE.PLAY && sequenceNumber < Convert.ToInt32(length))
+				{
+					if (packetsSent == 0)
+					{
+						sequenceNumber = Convert.ToInt32(options[1]);
+					}
+					int packetSize = Math.Min(64000, Convert.ToInt32(length));
+					System.Console.WriteLine($"Sequence number: {sequenceNumber}");
+					byte[] bytes = readFileBytes(sequenceNumber, packetSize);
+					RTPpacket packet = new RTPpacket(0, 0, bytes);
+					rtpController.sendPacket(packet, clientRTPport);
+					sequenceNumber += 64001;
+					packetsSent++;
+					Thread.Sleep(500);
+				}
+			});
+			Thread thread = new Thread(threadStart);
+			thread.Start();
 		}
 		private void handleRequest(string request)
 		{
