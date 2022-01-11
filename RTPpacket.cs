@@ -24,8 +24,12 @@ namespace RTSP_Server
 			{
 				packet[i] = payload[i];
 			}
-			File.WriteAllBytes("./video2.mp4", payload);
-			return packet;
+			using (FileStream stream = new FileStream("./video2.mp4", FileMode.Append))
+			{
+				stream.Write(payload, 0, payload.Length);
+			}
+			//File.WriteAllBytes("./video2.mp4", payload);
+			return payload;
 		}
 	}
 }

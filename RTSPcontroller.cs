@@ -49,6 +49,7 @@ namespace RTSP_Server
 				long length = new FileInfo("./video.mp4").Length;
 				System.Console.WriteLine("File length: " + length);
 				while (state == STATE.PLAY && sequenceNumber < Convert.ToInt32(length))
+				//while (packetsSent == 0)
 				{
 					if (packetsSent == 0)
 					{
@@ -59,9 +60,9 @@ namespace RTSP_Server
 					byte[] bytes = readFileBytes(sequenceNumber, packetSize);
 					RTPpacket packet = new RTPpacket(0, 0, bytes);
 					rtpController.sendPacket(packet, clientRTPport);
-					sequenceNumber += 64001;
+					sequenceNumber += 64000;
 					packetsSent++;
-					Thread.Sleep(500);
+					Thread.Sleep(200);
 				}
 			});
 			Thread thread = new Thread(threadStart);
