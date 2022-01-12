@@ -24,11 +24,11 @@ namespace RTSP_Server
 			{
 				packet[i] = payload[i];
 			}
-			using (FileStream stream = new FileStream("./video2.mp4", FileMode.Append))
+			using (FileStream stream = new FileStream("./video2.webm", FileMode.Append))
 			{
 				stream.Write(payload, 0, payload.Length);
 			}
-			//File.WriteAllBytes("./video2.mp4", payload);
+			//File.WriteAllBytes("./video2.webm", payload);
 			return payload;
 		}
 	}
