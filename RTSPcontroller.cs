@@ -69,14 +69,6 @@ namespace RTSP_Server
 			Thread thread = new Thread(threadStart);
 			thread.Start();
 		}
-		private int getNextSequenceNumber(string[] options, bool isFirstPacket)
-		{
-			if (isFirstPacket)
-			{
-				return Convert.ToInt32(options[1]);
-			}
-			return sequenceNumber;
-		}
 		private void handleRequest(string request)
 		{
 			string[] options = request.Split(" ");
@@ -113,7 +105,15 @@ namespace RTSP_Server
 			RTPpacket packet = new RTPpacket(0, 0, bytes);
 			rtpController.sendPacket(packet, clientRTPport);
 			sequenceNumber += 64000;
-			Thread.Sleep(200);
+			Thread.Sleep(2340);
+		}
+		private int getNextSequenceNumber(string[] options, bool isFirstPacket)
+		{
+			if (isFirstPacket)
+			{
+				return Convert.ToInt32(options[1]);
+			}
+			return sequenceNumber;
 		}
 		private int getNextPacketLength(long length)
 		{
